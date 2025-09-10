@@ -27,7 +27,7 @@ st.set_page_config(
 class ICUMonitorWeb:
     def __init__(self):
         # Correct path to models - one directory up from Web folder
-        self.model_path = Path(r"D:\Dissertation\App\models")
+        self.model_path = Path("models")
         self.models = {}
         self.scaler = None
         self.imputer = None
