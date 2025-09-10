@@ -274,7 +274,7 @@ def main():
     # Load models
     with st.expander("System Status", expanded=True):
         if not monitor.load_models():
-            st.error("Please check that your models are in: D:\\Dissertation\\App\\models")
+            st.error("Please check the directory")
             st.stop()
     
     # Initialize session state
