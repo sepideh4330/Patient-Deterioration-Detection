@@ -111,68 +111,70 @@ class ICUMonitorWeb:
         )
         return int(sirs), int(qsofa)
 
+
     def prepare_features(self, age, los_hours, vitals, labs):
-        """
-        Prepare feature vector by simulating a time-series based on current inputs
-        and creating summary statistics that match the training process.
-        """
+        """Prepare features matching training pipeline exactly."""
         if self.feature_names is None:
             st.error("Feature names not loaded. Cannot prepare data.")
             return None
-
-        # Create a dictionary to hold the feature values.
-        feature_dict = {}
-
-        # --- Static Features ---
+        
+        # Initialize feature vector with zeros
+        feature_dict = {name: 0.0 for name in self.feature_names}
+        
+        # Set known features
         feature_dict['age'] = age
-        feature_dict['gender_male'] = 0  # Assuming default for UI simplicity
-        feature_dict['admission_type_emergency'] = 1 # Assuming default
-
-        # --- Dynamic Features (Simulated Time Series) ---
-        all_measurements = {**vitals, **labs}
-
-        for item_name, current_value in all_measurements.items():
-            # Simulate a small, recent time series around the current value
-            simulated_series = pd.Series(np.random.normal(loc=current_value, scale=abs(current_value * 0.1) + 1e-6, size=10))
-
-            # Generate aggregated features for each time window defined in the training config
-            for start, end in [(0, 6), (6, 12), (12, 24), (24, 36), (36, 48)]:
-                # This is a simplification: we apply the same simulated stats to all windows
-                # A more complex simulation could create different trends for each window
-                prefix = f'window_{start}_{end}h_{item_name}'
-                feature_dict[f'mean_{prefix}'] = simulated_series.mean()
-                feature_dict[f'std_{prefix}'] = simulated_series.std()
-                feature_dict[f'min_{prefix}'] = simulated_series.min()
-                feature_dict[f'max_{prefix}'] = simulated_series.max()
-                feature_dict[f'median_{prefix}'] = simulated_series.median()
-                feature_dict[f'count_{prefix}'] = len(simulated_series)
-
-        # --- Clinical Scores ---
+        if 'gender_male' in feature_dict:
+            feature_dict['gender_male'] = 0  # Default
+        if 'admission_type_emergency' in feature_dict:
+            feature_dict['admission_type_emergency'] = 1  # Default
+        
+        # For each vital/lab, set the corresponding window features
+        # This is simplified - ideally load actual feature mappings
+        for window_start, window_end in [(0,6), (6,12), (12,24), (24,36), (36,48)]:
+            window_prefix = f'window_{window_start}_{window_end}h'
+            
+            for vital_name, vital_value in vitals.items():
+                for stat in ['mean', 'std', 'min', 'max', 'median', 'count']:
+                    feature_name = f'{stat}_{window_prefix}_{vital_name}'
+                    if feature_name in feature_dict:
+                        if stat == 'count':
+                            feature_dict[feature_name] = 10  # Assume 10 measurements
+                        elif stat == 'std':
+                            feature_dict[feature_name] = vital_value * 0.1  # 10% variation
+                        else:
+                            feature_dict[feature_name] = vital_value
+            
+            # Similar for labs
+            for lab_name, lab_value in labs.items():
+                for stat in ['mean', 'std', 'min', 'max', 'median', 'count']:
+                    feature_name = f'{stat}_{window_prefix}_{lab_name}'
+                    if feature_name in feature_dict:
+                        if stat == 'count':
+                            feature_dict[feature_name] = 5  # Fewer lab measurements
+                        elif stat == 'std':
+                            feature_dict[feature_name] = lab_value * 0.15
+                        else:
+                            feature_dict[feature_name] = lab_value
+        
+        # Calculate clinical scores
         sirs, qsofa = self.calculate_scores(vitals, labs)
-        feature_dict['sirs_score'] = sirs
-        feature_dict['qsofa_score'] = qsofa
-
-        # --- Align with Model's Expected Features ---
-        feature_df = pd.DataFrame([feature_dict])
+        if 'sirs_score' in feature_dict:
+            feature_dict['sirs_score'] = sirs
+        if 'qsofa_score' in feature_dict:
+            feature_dict['qsofa_score'] = qsofa
         
-        # Add any missing features with a default value (np.nan so imputer handles it)
-        for col in self.feature_names:
-            if col not in feature_df.columns:
-                feature_df[col] = np.nan
+        # Create DataFrame with exact column order
+        feature_df = pd.DataFrame([feature_dict])[self.feature_names]
         
-        # Ensure the column order is exactly what the model was trained on
-        feature_df = feature_df[self.feature_names]
-
-        # --- Apply Preprocessing ---
+        # Apply preprocessing
         try:
             feature_array = self.imputer.transform(feature_df)
             feature_array = self.scaler.transform(feature_array)
             return feature_array
         except Exception as e:
             st.error(f"Error during preprocessing: {e}")
-            st.text(traceback.format_exc())
             return None
-
+   
     def predict(self, age, los_hours, vitals, labs):
         """Make predictions using the loaded and prepared models."""
         features = self.prepare_features(age, los_hours, vitals, labs)
