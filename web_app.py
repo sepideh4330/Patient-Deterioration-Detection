@@ -179,7 +179,7 @@ class ICUMonitorWeb:
         """Make predictions using the loaded and prepared models."""
         features = self.prepare_features(age, los_hours, vitals, labs)
         if features is None:
-            return None # Stop if feature preparation failed
+            return None  # Stop if feature preparation failed
 
         predictions = {}
         for name, model in self.models.items():
@@ -192,13 +192,29 @@ class ICUMonitorWeb:
         if not predictions:
             return None
 
-        # Calculate ensemble score
+        # --- CORRECTED ENSEMBLE CALCULATION ---
         if self.ensemble_weights:
-            weighted_sum = sum(predictions.get(name, 0) * weight for name, weight in self.ensemble_weights.items())
-            total_weight = sum(weight for name in predictions if name in self.ensemble_weights)
-            predictions['ensemble'] = weighted_sum / total_weight if total_weight > 0 else np.mean(list(predictions.values()))
+            weighted_sum = 0.0
+            total_weight = 0.0
+            
+            # Iterate through the predictions you successfully made
+            for name, prob in predictions.items():
+                # Check if this model has a weight assigned in your weights file
+                if name in self.ensemble_weights:
+                    weight = self.ensemble_weights[name]  # Get the weight for this model
+                    weighted_sum += prob * weight
+                    total_weight += weight
+            
+            # Calculate the final score, checking for a total_weight of zero to avoid division errors
+            if total_weight > 0:
+                predictions['ensemble'] = weighted_sum / total_weight
+            else:
+                # Fallback to a simple average if no valid weights were found
+                st.warning("Could not apply ensemble weights, falling back to simple average.")
+                predictions['ensemble'] = np.mean(list(predictions.values()))
         else:
-            predictions['ensemble'] = np.mean(list(predictions.values())) # Fallback
+            # Fallback if the weights file wasn't loaded at all
+            predictions['ensemble'] = np.mean(list(predictions.values()))
 
         return predictions
 
