@@ -1,0 +1,6 @@
+{
+  "random_forest": 0.25,
+  "xgboost": 0.25,
+  "lightgbm": 0.25,
+  "lstm": 0.25
+}

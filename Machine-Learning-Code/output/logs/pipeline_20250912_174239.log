@@ -1,0 +1,11 @@
+2025-09-12 17:42:39 | INFO     | root | __init__ | ================================================================================
+2025-09-12 17:42:39 | INFO     | root | __init__ | ICU DETERIORATION PREDICTION - OPTIMIZED HYBRID PIPELINE
+2025-09-12 17:42:39 | INFO     | root | __init__ | ================================================================================
+2025-09-12 17:42:39 | INFO     | root | run | Initializing pandarallel with 10 workers.
+2025-09-12 17:42:39 | INFO     | root | run | 
+============================================================
+STEP 1: DATA LOADING AND COHORT CREATION
+============================================================
+2025-09-12 17:42:39 | INFO     | DataLoader | load_core_tables | Loading core MIMIC-III tables from Parquet...
+2025-09-12 17:42:40 | ERROR    | DataLoader | load_core_tables | FATAL: Parquet file not found at mimic_parquet\ADMISSIONS.parquet.
+2025-09-12 17:42:40 | ERROR    | DataLoader | load_core_tables | Please run the `convert_to_parquet.py` script first.

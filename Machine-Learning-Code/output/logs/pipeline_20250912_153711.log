@@ -1,0 +1,26 @@
+2025-09-12 15:37:11 | INFO     | root | __init__ | ================================================================================
+2025-09-12 15:37:11 | INFO     | root | __init__ | ICU DETERIORATION PREDICTION - ENHANCED HYBRID PIPELINE
+2025-09-12 15:37:11 | INFO     | root | __init__ | ================================================================================
+2025-09-12 15:37:11 | INFO     | root | run | 
+============================================================
+2025-09-12 15:37:11 | INFO     | root | run | STEP 1: DATA LOADING AND COHORT CREATION
+2025-09-12 15:37:11 | INFO     | root | run | ============================================================
+2025-09-12 15:37:11 | INFO     | DataLoader | load_core_tables | Loading core MIMIC-III tables...
+2025-09-12 15:37:11 | INFO     | DataLoader | load_core_tables |   Loading ADMISSIONS.csv.gz...
+2025-09-12 15:37:12 | INFO     | DataLoader | load_core_tables |     Loaded 58,976 rows, Memory: 0.41 GB
+2025-09-12 15:37:12 | INFO     | DataLoader | load_core_tables |   Loading PATIENTS.csv.gz...
+2025-09-12 15:37:12 | INFO     | DataLoader | load_core_tables |     Loaded 46,520 rows, Memory: 0.42 GB
+2025-09-12 15:37:12 | INFO     | DataLoader | load_core_tables |   Loading ICUSTAYS.csv.gz...
+2025-09-12 15:37:12 | INFO     | DataLoader | load_core_tables |     Loaded 61,532 rows, Memory: 0.43 GB
+2025-09-12 15:37:12 | INFO     | DataLoader | create_cohort | Creating study cohort...
+2025-09-12 15:37:12 | INFO     | DataLoader | create_cohort |   Initial admissions: 61,532
+2025-09-12 15:37:12 | INFO     | DataLoader | create_cohort |   After age >= 18: 53,362
+2025-09-12 15:37:12 | INFO     | DataLoader | create_cohort |   After first admission only: 38,538
+2025-09-12 15:37:12 | INFO     | DataLoader | create_cohort |   After LOS >= 74h: 13,123
+2025-09-12 15:37:12 | INFO     | DataLoader | create_cohort |   Final cohort: 13,123 patients
+2025-09-12 15:37:12 | INFO     | DataLoader | process_events_parallel | Processing events data (this will take time)...
+2025-09-12 15:37:12 | INFO     | DataLoader | process_events_parallel |   Loading from cache...
+2025-09-12 15:37:16 | INFO     | root | run | 
+============================================================
+2025-09-12 15:37:16 | INFO     | root | run | STEP 2: FEATURE ENGINEERING
+2025-09-12 15:37:16 | INFO     | root | run | ============================================================

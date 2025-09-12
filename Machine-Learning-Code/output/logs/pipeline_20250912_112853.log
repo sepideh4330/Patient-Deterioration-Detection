@@ -1,0 +1,112 @@
+2025-09-12 11:28:53 | INFO     | root | __init__ | ================================================================================
+2025-09-12 11:28:53 | INFO     | root | __init__ | ICU DETERIORATION PREDICTION - ENHANCED HYBRID PIPELINE
+2025-09-12 11:28:53 | INFO     | root | __init__ | ================================================================================
+2025-09-12 11:28:53 | INFO     | root | run | 
+============================================================
+2025-09-12 11:28:53 | INFO     | root | run | STEP 1: DATA LOADING AND COHORT CREATION
+2025-09-12 11:28:53 | INFO     | root | run | ============================================================
+2025-09-12 11:28:53 | INFO     | DataLoader | load_core_tables | Loading core MIMIC-III tables...
+2025-09-12 11:28:53 | INFO     | DataLoader | load_core_tables |   Loading ADMISSIONS.csv.gz...
+2025-09-12 11:28:53 | INFO     | DataLoader | load_core_tables |     Loaded 58,976 rows, Memory: 0.41 GB
+2025-09-12 11:28:53 | INFO     | DataLoader | load_core_tables |   Loading PATIENTS.csv.gz...
+2025-09-12 11:28:53 | INFO     | DataLoader | load_core_tables |     Loaded 46,520 rows, Memory: 0.42 GB
+2025-09-12 11:28:53 | INFO     | DataLoader | load_core_tables |   Loading ICUSTAYS.csv.gz...
+2025-09-12 11:28:53 | INFO     | DataLoader | load_core_tables |     Loaded 61,532 rows, Memory: 0.43 GB
+2025-09-12 11:28:53 | INFO     | DataLoader | create_cohort | Creating study cohort...
+2025-09-12 11:28:53 | INFO     | DataLoader | create_cohort |   Initial admissions: 61,532
+2025-09-12 11:28:53 | INFO     | DataLoader | create_cohort |   After age >= 18: 53,362
+2025-09-12 11:28:53 | INFO     | DataLoader | create_cohort |   After first admission only: 38,538
+2025-09-12 11:28:53 | INFO     | DataLoader | create_cohort |   After LOS >= 74h: 13,123
+2025-09-12 11:28:53 | INFO     | DataLoader | create_cohort |   Final cohort: 13,123 patients
+2025-09-12 11:28:53 | INFO     | DataLoader | process_events_parallel | Processing events data (this will take time)...
+2025-09-12 11:28:53 | INFO     | DataLoader | process_events_parallel |   Loading from cache...
+2025-09-12 11:28:56 | INFO     | root | run | 
+============================================================
+2025-09-12 11:28:56 | INFO     | root | run | STEP 2: FEATURE ENGINEERING
+2025-09-12 11:28:56 | INFO     | root | run | ============================================================
+2025-09-12 12:01:53 | INFO     | root | _create_features | Created features for 13040 patients
+2025-09-12 12:01:53 | INFO     | root | _create_features | Deterioration rate: 50.39%
+2025-09-12 12:02:03 | INFO     | root | run | 
+============================================================
+2025-09-12 12:02:03 | INFO     | root | run | STEP 3: DATA PREPARATION
+2025-09-12 12:02:03 | INFO     | root | run | ============================================================
+2025-09-12 12:02:03 | INFO     | root | _prepare_data | Train set: 9127 (50.39% positive)
+2025-09-12 12:02:03 | INFO     | root | _prepare_data | Val set: 1957 (50.38% positive)
+2025-09-12 12:02:03 | INFO     | root | _prepare_data | Test set: 1956 (50.41% positive)
+2025-09-12 12:23:40 | INFO     | root | _prepare_data | Applying SMOTE to handle class imbalance...
+2025-09-12 12:23:43 | INFO     | root | _prepare_data | After SMOTE: 9198 samples (50.00% positive)
+2025-09-12 12:23:43 | INFO     | root | run | 
+============================================================
+2025-09-12 12:23:43 | INFO     | root | run | STEP 4: MODEL TRAINING AND CALIBRATION
+2025-09-12 12:23:43 | INFO     | root | run | ============================================================
+2025-09-12 12:23:43 | INFO     | ModelTrainer | train_balanced_random_forest | Training Balanced Random Forest...
+2025-09-12 13:16:12 | INFO     | ModelTrainer | train_balanced_random_forest |   Best parameters: {'n_estimators': 300, 'min_samples_split': 2, 'min_samples_leaf': 1, 'max_features': None, 'max_depth': 15}
+2025-09-12 13:16:12 | INFO     | ModelTrainer | train_balanced_random_forest |   Best CV score: 0.8048
+2025-09-12 13:16:12 | INFO     | ModelTrainer | train_balanced_random_forest |   Validation AUC-ROC: 0.7884
+2025-09-12 13:16:12 | INFO     | ModelTrainer | train_xgboost | Training XGBoost...
+2025-09-12 13:16:29 | INFO     | ModelTrainer | train_xgboost |   Best iteration: 73
+2025-09-12 13:16:29 | INFO     | ModelTrainer | train_xgboost |   Validation AUC-ROC: 0.7937
+2025-09-12 13:16:29 | INFO     | ModelTrainer | train_lightgbm | Training LightGBM...
+2025-09-12 13:16:33 | INFO     | ModelTrainer | train_lightgbm |   Best iteration: 55
+2025-09-12 13:16:33 | INFO     | ModelTrainer | train_lightgbm |   Validation AUC-ROC: 0.7932
+2025-09-12 13:16:33 | INFO     | ModelTrainer | train_lstm_attention | Training LSTM with Attention...
+2025-09-12 13:16:44 | WARNING  | absl | save_model | You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+2025-09-12 13:16:44 | DEBUG    | h5py._conv | create | Creating converter from 5 to 3
+2025-09-12 13:16:50 | WARNING  | absl | save_model | You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+2025-09-12 13:16:55 | WARNING  | absl | save_model | You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+2025-09-12 13:17:01 | WARNING  | absl | save_model | You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+2025-09-12 13:17:06 | WARNING  | absl | save_model | You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+2025-09-12 13:17:11 | WARNING  | absl | save_model | You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+2025-09-12 13:17:17 | WARNING  | absl | save_model | You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+2025-09-12 13:17:22 | WARNING  | absl | save_model | You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+2025-09-12 13:17:33 | WARNING  | absl | save_model | You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+2025-09-12 13:17:39 | WARNING  | absl | save_model | You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+2025-09-12 13:17:49 | WARNING  | absl | save_model | You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+2025-09-12 13:18:00 | WARNING  | absl | save_model | You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+2025-09-12 13:18:11 | WARNING  | absl | save_model | You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+2025-09-12 13:18:43 | WARNING  | absl | save_model | You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+2025-09-12 13:18:55 | WARNING  | absl | save_model | You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+2025-09-12 13:19:16 | WARNING  | absl | save_model | You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+2025-09-12 13:19:22 | WARNING  | absl | save_model | You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+2025-09-12 13:19:32 | WARNING  | absl | save_model | You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+2025-09-12 13:20:00 | WARNING  | absl | save_model | You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+2025-09-12 13:20:17 | WARNING  | absl | save_model | You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+2025-09-12 13:20:23 | WARNING  | absl | save_model | You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+2025-09-12 13:20:39 | WARNING  | absl | save_model | You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+2025-09-12 13:21:40 | WARNING  | absl | save_model | You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+2025-09-12 13:23:06 | INFO     | ModelTrainer | train_lstm_attention |   Best epoch: 1
+2025-09-12 13:23:06 | INFO     | ModelTrainer | train_lstm_attention |   Validation AUC-ROC: 0.7780
+2025-09-12 13:23:06 | INFO     | ModelTrainer | calibrate_models | Calibrating models...
+2025-09-12 13:23:06 | INFO     | ModelTrainer | calibrate_models |   Calibrated random_forest
+2025-09-12 13:23:06 | INFO     | ModelTrainer | calibrate_models |   Calibrated xgboost
+2025-09-12 13:23:06 | ERROR    | root | run | Pipeline failed: The 'estimator' parameter of CalibratedClassifierCV must be an object implementing 'fit' and 'predict_proba', an object implementing 'fit' and 'decision_function' or None. Got <__main__.ModelTrainer.calibrate_models.<locals>.LGBWrapper object at 0x000001D2AB9C8EC0> instead.
+2025-09-12 13:23:07 | ERROR    | root | run | Traceback (most recent call last):
+  File "D:\Dissertation\App\main.py", line 1363, in run
+    self._train_models(X_train, y_train, X_val, y_val)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Dissertation\App\main.py", line 1499, in _train_models
+    self.model_trainer.calibrate_models(X_val, y_val)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "D:\Dissertation\App\main.py", line 943, in calibrate_models
+    self.models['lightgbm'].fit(X_val, y_val)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "C:\Users\Saqar\AppData\Local\Programs\Python\Python313\Lib\site-packages\sklearn\base.py", line 1358, in wrapper
+    estimator._validate_params()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Saqar\AppData\Local\Programs\Python\Python313\Lib\site-packages\sklearn\base.py", line 471, in _validate_params
+    validate_parameter_constraints(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self._parameter_constraints,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        self.get_params(deep=False),
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        caller_name=self.__class__.__name__,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Saqar\AppData\Local\Programs\Python\Python313\Lib\site-packages\sklearn\utils\_param_validation.py", line 98, in validate_parameter_constraints
+    raise InvalidParameterError(
+    ...<2 lines>...
+    )
+sklearn.utils._param_validation.InvalidParameterError: The 'estimator' parameter of CalibratedClassifierCV must be an object implementing 'fit' and 'predict_proba', an object implementing 'fit' and 'decision_function' or None. Got <__main__.ModelTrainer.calibrate_models.<locals>.LGBWrapper object at 0x000001D2AB9C8EC0> instead.
+

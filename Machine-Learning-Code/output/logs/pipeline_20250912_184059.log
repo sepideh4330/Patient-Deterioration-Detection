@@ -1,0 +1,100 @@
+2025-09-12 18:40:59 | INFO     | root | __init__ | ================================================================================
+2025-09-12 18:40:59 | INFO     | root | __init__ | ICU DETERIORATION PREDICTION - ENHANCED HYBRID PIPELINE
+2025-09-12 18:40:59 | INFO     | root | __init__ | ================================================================================
+2025-09-12 18:40:59 | INFO     | root | run | 
+============================================================
+STEP 1: DATA LOADING AND COHORT CREATION
+============================================================
+2025-09-12 18:40:59 | INFO     | DataLoader | load_core_tables | Loading core MIMIC-III tables...
+2025-09-12 18:40:59 | INFO     | DataLoader | load_core_tables |   Loading ADMISSIONS.csv.gz...
+2025-09-12 18:41:00 | INFO     | DataLoader | load_core_tables |     Loaded 58,976 rows, Memory: 0.41 GB
+2025-09-12 18:41:00 | INFO     | DataLoader | load_core_tables |   Loading PATIENTS.csv.gz...
+2025-09-12 18:41:00 | INFO     | DataLoader | load_core_tables |     Loaded 46,520 rows, Memory: 0.42 GB
+2025-09-12 18:41:00 | INFO     | DataLoader | load_core_tables |   Loading ICUSTAYS.csv.gz...
+2025-09-12 18:41:00 | INFO     | DataLoader | load_core_tables |     Loaded 61,532 rows, Memory: 0.43 GB
+2025-09-12 18:41:00 | INFO     | DataLoader | create_cohort | Creating study cohort...
+2025-09-12 18:41:00 | INFO     | DataLoader | create_cohort |   Initial admissions: 61,532
+2025-09-12 18:41:00 | INFO     | DataLoader | create_cohort |   After age >= 18: 53,362
+2025-09-12 18:41:00 | INFO     | DataLoader | create_cohort |   After first admission only: 38,538
+2025-09-12 18:41:00 | INFO     | DataLoader | create_cohort |   After LOS >= 74h: 13,123
+2025-09-12 18:41:00 | INFO     | DataLoader | create_cohort |   Final cohort: 13,123 patients
+2025-09-12 18:41:00 | INFO     | DataLoader | process_events_parallel | Processing events data (this will take time)...
+2025-09-12 18:41:00 | INFO     | DataLoader | process_events_parallel |   Loading from cache...
+2025-09-12 18:41:02 | INFO     | root | run | 
+============================================================
+STEP 2: FEATURE ENGINEERING
+============================================================
+2025-09-12 18:41:02 | INFO     | root | _create_features_vectorized | Starting vectorized feature engineering...
+2025-09-12 18:41:02 | INFO     | root | _create_features_vectorized |   Merging cohort data and calculating time from admission...
+2025-09-12 18:41:04 | INFO     | root | _create_features_vectorized |   Filtering patients by minimum measurement count...
+2025-09-12 18:41:08 | INFO     | root | _create_features_vectorized |   Retained 13040 patients after filtering.
+2025-09-12 18:41:08 | INFO     | root | _create_features_vectorized |   Determining patient outcomes...
+2025-09-12 18:41:09 | INFO     | root | _create_features_vectorized |   Engineering windowed statistical features...
+2025-09-12 18:41:13 | INFO     | root | _create_features_vectorized |   Adding static features and clinical scores...
+2025-09-12 18:41:13 | INFO     | FeatureEngineer | _calculate_standard_clinical_scores | Calculating clinical scores (SIRS, qSOFA)...
+2025-09-12 18:41:13 | INFO     | root | _create_features_vectorized | Created features for 13040 patients
+2025-09-12 18:41:13 | INFO     | root | _create_features_vectorized | Deterioration rate: 50.44%
+2025-09-12 18:41:18 | INFO     | root | run | 
+============================================================
+STEP 3: DATA PREPARATION
+============================================================
+2025-09-12 18:41:18 | INFO     | root | _prepare_data | Train set: 9127 (50.43% positive)
+2025-09-12 18:41:18 | INFO     | root | _prepare_data | Val set:   1957 (50.43% positive)
+2025-09-12 18:41:18 | INFO     | root | _prepare_data | Test set:  1956 (50.46% positive)
+2025-09-12 18:41:18 | INFO     | root | _prepare_data | Imputing missing values with SimpleImputer (mean strategy)...
+2025-09-12 18:41:18 | INFO     | root | _prepare_data | Scaling features with RobustScaler...
+2025-09-12 18:41:18 | INFO     | root | _prepare_data | Applying SMOTE to training data for class balance...
+2025-09-12 18:41:20 | INFO     | root | _prepare_data | After SMOTE: 9206 samples (50.00% positive)
+2025-09-12 18:41:20 | INFO     | root | run | 
+============================================================
+STEP 4: MODEL TRAINING AND CALIBRATION
+============================================================
+2025-09-12 18:41:20 | INFO     | ModelTrainer | train_balanced_random_forest | Training Balanced Random Forest...
+2025-09-12 19:06:17 | INFO     | ModelTrainer | train_balanced_random_forest |   Best parameters: {'n_estimators': 300, 'min_samples_split': 2, 'min_samples_leaf': 1, 'max_features': None, 'max_depth': 15}
+2025-09-12 19:06:17 | INFO     | ModelTrainer | train_balanced_random_forest |   Best CV score: 0.8106
+2025-09-12 19:06:17 | INFO     | ModelTrainer | train_balanced_random_forest |   Validation AUC-ROC: 0.7963
+2025-09-12 19:06:17 | INFO     | ModelTrainer | train_xgboost | Training XGBoost...
+2025-09-12 19:06:23 | INFO     | ModelTrainer | train_xgboost |   Best iteration: 38
+2025-09-12 19:06:23 | INFO     | ModelTrainer | train_xgboost |   Validation AUC-ROC: 0.7998
+2025-09-12 19:06:23 | INFO     | ModelTrainer | train_lightgbm | Training LightGBM...
+2025-09-12 19:06:25 | INFO     | ModelTrainer | train_lightgbm |   Best iteration: 34
+2025-09-12 19:06:25 | INFO     | ModelTrainer | train_lightgbm |   Validation AUC-ROC: 0.8017
+2025-09-12 19:06:25 | INFO     | ModelTrainer | train_lstm_attention | Training LSTM with Attention...
+2025-09-12 19:06:35 | WARNING  | absl | save_model | You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+2025-09-12 19:06:35 | DEBUG    | h5py._conv | create | Creating converter from 5 to 3
+2025-09-12 19:06:39 | WARNING  | absl | save_model | You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+2025-09-12 19:06:51 | WARNING  | absl | save_model | You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+2025-09-12 19:07:53 | INFO     | ModelTrainer | train_lstm_attention |   Best epoch: 5
+2025-09-12 19:07:53 | INFO     | ModelTrainer | train_lstm_attention |   Validation AUC-ROC: 0.5571
+2025-09-12 19:07:53 | INFO     | ModelTrainer | calibrate_models | Calibrating models...
+2025-09-12 19:07:53 | INFO     | ModelTrainer | calibrate_models |   Calibrated random_forest
+2025-09-12 19:07:53 | INFO     | ModelTrainer | calibrate_models |   Calibrated xgboost
+2025-09-12 19:07:53 | ERROR    | root | run | Pipeline failed: LGBWrapper should either be a classifier to be used with response_method=['decision_function', 'predict_proba'] or the response_method should be 'predict'. Got a regressor with response_method=['decision_function', 'predict_proba'] instead.
+Traceback (most recent call last):
+  File "D:\Dissertation\App\main.py", line 824, in run
+    self._train_models(X_train, y_train, X_val, y_val)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Dissertation\App\main.py", line 969, in _train_models
+    self.model_trainer.calibrate_models(X_val, y_val)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "D:\Dissertation\App\main.py", line 534, in calibrate_models
+    self.models['lightgbm'].fit(X_val, y_val)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "C:\Users\Saqar\AppData\Local\Programs\Python\Python313\Lib\site-packages\sklearn\base.py", line 1365, in wrapper
+    return fit_method(estimator, *args, **kwargs)
+  File "C:\Users\Saqar\AppData\Local\Programs\Python\Python313\Lib\site-packages\sklearn\calibration.py", line 340, in fit
+    predictions, _ = _get_response_values(
+                     ~~~~~~~~~~~~~~~~~~~~^
+        estimator,
+        ^^^^^^^^^^
+        X,
+        ^^
+        response_method=["decision_function", "predict_proba"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Saqar\AppData\Local\Programs\Python\Python313\Lib\site-packages\sklearn\utils\_response.py", line 235, in _get_response_values
+    raise ValueError(
+    ...<4 lines>...
+    )
+ValueError: LGBWrapper should either be a classifier to be used with response_method=['decision_function', 'predict_proba'] or the response_method should be 'predict'. Got a regressor with response_method=['decision_function', 'predict_proba'] instead.
